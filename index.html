@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kurdistan Electricity Cost Calculator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Optional: Add some custom styles if needed, but primarily use Tailwind utilities */
+        body {
+            font-family: "Inter", sans-serif;
+        }
+        /* Add a subtle background pattern or gradient if desired */
+         body {
+            background-image: linear-gradient(to top right, #e2e8f0, #cbd5e1);
+         }
+         /* Custom table styling for better spacing and mobile optimization */
+         .breakdown-table th, .breakdown-table td {
+             padding: 12px; /* Default padding */
+             text-align: left;
+         }
+         .breakdown-table th {
+             background-color: #e5e7eb; /* Light gray background for headers */
+             font-weight: bold;
+         }
+         .breakdown-table tr:nth-child(even) {
+             background-color: #f9fafb; /* Slightly different background for even rows */
+         }
+
+         /* Adjust padding and font size for smaller screens */
+         @media (max-width: 640px) { /* Tailwind's 'sm' breakpoint */
+            .breakdown-table th, .breakdown-table td {
+                padding: 8px; /* Reduced padding on small screens */
+                font-size: 0.875rem; /* Slightly smaller text */
+            }
+         }
+    </style>
+</head>
+<body class="bg-gray-200 flex items-center justify-center min-h-screen p-6">
+    <div class="bg-white p-12 rounded-2xl shadow-2xl w-full max-w-xl transform transition-all duration-300 hover:scale-105">
+        <h1 class="text-3xl font-extrabold text-center text-gray-900 mb-10">Electricity Cost Calculator (Kurdistan)</h1>
+
+        <div class="mb-8">
+            <label for="kwh" class="block text-gray-700 text-lg font-semibold mb-3">
+                Enter Electricity Consumption (kWh):
+            </label>
+            <input type="number" id="kwh" class="shadow-sm appearance-none border border-gray-300 rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent transition duration-200 ease-in-out" placeholder="e.g., 500" min="0">
+        </div>
+
+        <button id="calculateBtn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg focus:outline-none focus:shadow-outline w-full transition duration-200 ease-in-out transform hover:scale-105">
+            Calculate Cost
+        </button>
+
+        <div id="result" class="mt-10">
+            <div id="totalCost" class="text-center text-2xl font-bold text-gray-800 mb-8"></div>
+            <div id="breakdown" class="text-base text-gray-700 bg-gray-100 p-6 rounded-lg">
+                 <h3 class="font-bold mb-4 text-gray-800">Cost Breakdown:</h3>
+                 <div class="overflow-x-auto">  <table class="min-w-full border-collapse breakdown-table">
+                         <thead>
+                             <tr>
+                                 <th class="border border-gray-300">Tier</th>
+                                 <th class="border border-gray-300">kWh</th>
+                                 <th class="border border-gray-300">Price/kWh</th>
+                                 <th class="border border-gray-300">Cost</th>
+                             </tr>
+                         </thead>
+                         <tbody id="breakdown-body">
+                             </tbody>
+                     </table>
+                 </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('calculateBtn').addEventListener('click', function() {
+            const kwhInput = document.getElementById('kwh');
+            const kwh = parseFloat(kwhInput.value);
+            const totalCostDiv = document.getElementById('totalCost');
+            const breakdownBody = document.getElementById('breakdown-body');
+
+            // Clear previous results
+            totalCostDiv.textContent = '';
+            breakdownBody.innerHTML = ''; // Clear table body
+            totalCostDiv.classList.remove('text-green-600', 'text-red-600');
+
+
+            if (isNaN(kwh) || kwh < 0) {
+                totalCostDiv.textContent = 'Please enter a valid positive number for kWh.';
+                totalCostDiv.classList.add('text-red-600');
+                kwhInput.classList.add('border-red-500'); // Indicate error on input
+                return;
+            } else {
+                 kwhInput.classList.remove('border-red-500'); // Remove error indication
+            }
+
+            let totalCost = 0;
+            let remainingKwh = kwh;
+
+            // Define tiers and prices
+            const tiers = [
+                { limit: 400, price: 72, label: '0 - 400 kWh' },
+                { limit: 800, price: 108, label: '401 - 800 kWh' },
+                { limit: 1200, price: 175, label: '801 - 1200 kWh' },
+                { limit: 1600, price: 265, label: '1201 - 1600 kWh' },
+                { limit: Infinity, price: 350, label: '1600+ kWh' } // Use Infinity for the last tier
+            ];
+
+            let previousLimit = 0;
+
+            for (const tier of tiers) {
+                if (remainingKwh <= 0) {
+                    break; // Stop if no kWh remaining
+                }
+
+                const tierLimit = tier.limit;
+                const tierPrice = tier.price;
+                const tierLabel = tier.label;
+
+                // Calculate kWh within the current tier
+                const kwhInTier = Math.min(remainingKwh, tierLimit - previousLimit);
+
+                // Calculate cost for this tier
+                const costInTier = kwhInTier * tierPrice;
+                totalCost += costInTier;
+
+                // Add to breakdown table if any kWh were in this tier
+                if (kwhInTier > 0) {
+                     const row = breakdownBody.insertRow();
+                     row.classList.add('border-b', 'border-gray-300'); // Add border to row
+
+                     const tierCell = row.insertCell(0);
+                     tierCell.textContent = tierLabel;
+                     tierCell.classList.add('border', 'border-gray-300'); // Add border to cell
+
+                     const kwhCell = row.insertCell(1);
+                     // Remove toFixed(2) to remove decimals from kWh
+                     kwhCell.textContent = Math.floor(kwhInTier).toLocaleString(); // Use Math.floor to remove decimals and toLocaleString for commas
+                     kwhCell.classList.add('border', 'border-gray-300'); // Add border to cell
+
+
+                     const priceCell = row.insertCell(2);
+                     // Use toLocaleString for commas on price
+                     priceCell.textContent = `${tierPrice.toLocaleString()}`; // Removed "Dinars/kWh" here to make it shorter
+                     priceCell.classList.add('border', 'border-gray-300'); // Add border to cell
+
+
+                     const costCell = row.insertCell(3);
+                     // Remove toFixed(2) and use toLocaleString for commas on cost
+                     costCell.textContent = `${Math.floor(costInTier).toLocaleString()} Dinars`; // Use Math.floor to remove decimals and toLocaleString for commas
+                     costCell.classList.add('border', 'border-gray-300', 'font-medium', 'text-gray-900'); // Add border to cell
+
+                }
+
+
+                // Update remaining kWh
+                remainingKwh -= kwhInTier;
+
+                // Update previous limit for the next iteration
+                previousLimit = tierLimit;
+            }
+
+            // Remove toFixed(2) and use toLocaleString for commas on total cost
+            totalCostDiv.textContent = `Estimated Total Cost: ${Math.floor(totalCost).toLocaleString()} Iraqi Dinars`; // Use Math.floor to remove decimals and toLocaleString for commas
+            totalCostDiv.classList.add('text-green-600');
+        });
+    </script>
+</body>
+</html>
