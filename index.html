@@ -6,62 +6,148 @@
     <title>Kurdistan Electricity Cost Calculator</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Optional: Add some custom styles if needed, but primarily use Tailwind utilities */
+        /* Basic styling for a clean background and centered content */
         body {
-            font-family: "Inter", sans-serif;
+            font-family: "Inter", sans-serif; /* Using Inter as a clean sans-serif font */
+            background-color: #f4f7f6; /* A very light, slightly cool gray */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 1rem;
         }
-        /* Add a subtle background pattern or gradient if desired */
-         body {
-            background-image: linear-gradient(to top right, #e2e8f0, #cbd5e1);
+
+        /* Styled container for the calculator */
+        .calculator-container {
+            background-color: #ffffff; /* White background for the content */
+            padding: 2rem; /* Generous padding */
+            border-radius: 0.5rem; /* Moderate rounded corners */
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* Subtle shadow */
+            width: 100%;
+            max-width: 500px; /* Max width for the calculator */
+        }
+
+        /* Custom table styling */
+         .breakdown-table {
+             border-collapse: collapse;
+             width: 100%;
+             margin-top: 1rem; /* Space above the table */
          }
-         /* Custom table styling for better spacing and mobile optimization */
          .breakdown-table th, .breakdown-table td {
-             padding: 12px; /* Default padding */
+             padding: 0.75rem 1rem; /* Padding within cells */
              text-align: left;
+             border-bottom: 1px solid #e2e8f0; /* Light border between rows */
+             color: #4a5568; /* Dark gray text color */
+             font-size: 0.9rem; /* Slightly smaller text in table */
          }
          .breakdown-table th {
-             background-color: #e5e7eb; /* Light gray background for headers */
-             font-weight: bold;
+             background-color: #edf2f7; /* Very light gray background for headers */
+             font-weight: 600; /* Semi-bold headers */
+             color: #2d3748; /* Darker text for headers */
+             text-transform: uppercase; /* Uppercase headers */
+             font-size: 0.8rem;
          }
-         .breakdown-table tr:nth-child(even) {
-             background-color: #f9fafb; /* Slightly different background for even rows */
-         }
+          .breakdown-table tbody tr:last-child td {
+              border-bottom: none; /* No border on the last row */
+          }
 
          /* Adjust padding and font size for smaller screens */
-         @media (max-width: 640px) { /* Tailwind's 'sm' breakpoint */
+         @media (max-width: 640px) {
             .breakdown-table th, .breakdown-table td {
-                padding: 8px; /* Reduced padding on small screens */
-                font-size: 0.875rem; /* Slightly smaller text */
+                padding: 0.5rem 0.75rem; /* Reduced padding on small screens */
+                font-size: 0.85rem;
             }
+             .calculator-container {
+                 padding: 1.5rem; /* Reduced container padding on small screens */
+             }
+         }
+
+
+         /* Style for the flag icon */
+         .flag-icon {
+             display: inline-block;
+             width: 28px; /* Adjust size */
+             height: 18px; /* Adjust size */
+             margin-right: 10px;
+             vertical-align: middle;
+         }
+         .flag-icon svg {
+             display: block; /* Remove extra space below SVG */
+         }
+
+         /* Input field style */
+         .text-input {
+             border: 1px solid #cbd5e1; /* Light border */
+             border-radius: 0.25rem; /* Small rounded corners */
+             padding: 0.6rem 1rem; /* Padding */
+             width: 100%;
+             font-size: 1rem;
+             color: #4a5568;
+             transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+         }
+         .text-input:focus {
+             outline: none;
+             border-color: #4299e1; /* Blue focus color */
+             box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.5); /* Subtle focus ring */
+         }
+
+         /* Button style */
+         .primary-button {
+             background-color: #4299e1; /* Primary blue color */
+             color: #ffffff;
+             font-weight: 700; /* Bold */
+             padding: 0.75rem 1.5rem; /* Padding */
+             border-radius: 0.25rem; /* Small rounded corners */
+             width: 100%;
+             text-align: center;
+             transition: background-color 0.2s ease-in-out, opacity 0.2s ease-in-out;
+         }
+         .primary-button:hover {
+             background-color: #3182ce; /* Darker blue on hover */
+         }
+         .primary-button:focus {
+             outline: none;
+             box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.5); /* Subtle focus ring */
          }
     </style>
 </head>
-<body class="bg-gray-200 flex items-center justify-center min-h-screen p-6">
-    <div class="bg-white p-12 rounded-2xl shadow-2xl w-full max-w-xl transform transition-all duration-300 hover:scale-105">
-        <h1 class="text-3xl font-extrabold text-center text-gray-900 mb-10">Electricity Cost Calculator (Kurdistan)</h1>
+<body>
+    <div class="calculator-container">
 
-        <div class="mb-8">
-            <label for="kwh" class="block text-gray-700 text-lg font-semibold mb-3">
-                Enter Electricity Consumption (kWh):
-            </label>
-            <input type="number" id="kwh" class="shadow-sm appearance-none border border-gray-300 rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent transition duration-200 ease-in-out" placeholder="e.g., 500" min="0">
+        <div class="flex items-center justify-center mb-6">
+             <svg class="flag-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400">
+                <rect width="600" height="400" fill="#10b981"/>
+                <rect width="600" height="266.67" fill="#ffffff"/>
+                <rect width="600" height="133.33" fill="#ef4444"/>
+                <circle cx="300" cy="200" r="70" fill="#facc15"/>
+                <path d="M300 130l19.098 58.779-62.349-45.306 77.019 0L280.902 188.779z" fill="#ef4444"/>
+            </svg>
+            <h1 class="text-2xl font-bold text-center text-gray-800">Electricity Cost Calculator (Kurdistan)</h1>
         </div>
 
-        <button id="calculateBtn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg focus:outline-none focus:shadow-outline w-full transition duration-200 ease-in-out transform hover:scale-105">
+        <div class="mb-4">
+            <label for="kwh" class="block text-gray-700 text-sm font-semibold mb-2">
+                Consumption (kWh):
+            </label>
+            <input type="number" id="kwh" class="text-input" placeholder="e.g., 500" min="0">
+        </div>
+
+        <button id="calculateBtn" class="primary-button">
             Calculate Cost
         </button>
 
-        <div id="result" class="mt-10">
-            <div id="totalCost" class="text-center text-2xl font-bold text-gray-800 mb-8"></div>
-            <div id="breakdown" class="text-base text-gray-700 bg-gray-100 p-6 rounded-lg">
-                 <h3 class="font-bold mb-4 text-gray-800">Cost Breakdown:</h3>
-                 <div class="overflow-x-auto">  <table class="min-w-full border-collapse breakdown-table">
+        <div id="result" class="mt-6">
+            <div id="totalCost" class="text-center text-lg font-bold text-gray-800 mb-4"></div>
+            <div id="breakdown" class="bg-gray-50 p-4 rounded-md">
+                 <h3 class="font-semibold text-gray-700 mb-3">Cost Breakdown:</h3>
+                 <div class="overflow-x-auto">
+                     <table class="breakdown-table">
                          <thead>
                              <tr>
-                                 <th class="border border-gray-300">Tier</th>
-                                 <th class="border border-gray-300">kWh</th>
-                                 <th class="border border-gray-300">Price/kWh</th>
-                                 <th class="border border-gray-300">Cost</th>
+                                 <th>Tier</th>
+                                 <th>kWh</th>
+                                 <th>Price (IQD/kWh)</th>
+                                 <th>Cost (IQD)</th>
                              </tr>
                          </thead>
                          <tbody id="breakdown-body">
@@ -70,6 +156,7 @@
                  </div>
             </div>
         </div>
+
     </div>
 
     <script>
@@ -97,13 +184,13 @@
             let totalCost = 0;
             let remainingKwh = kwh;
 
-            // Define tiers and prices
+            // Define tiers and prices based on the original image (Untitled.jpeg) - Dinars/kWh
             const tiers = [
                 { limit: 400, price: 72, label: '0 - 400 kWh' },
                 { limit: 800, price: 108, label: '401 - 800 kWh' },
                 { limit: 1200, price: 175, label: '801 - 1200 kWh' },
                 { limit: 1600, price: 265, label: '1201 - 1600 kWh' },
-                { limit: Infinity, price: 350, label: '1600+ kWh' } // Use Infinity for the last tier
+                { limit: Infinity, price: 350, label: '1600+ kWh' }
             ];
 
             let previousLimit = 0;
@@ -127,41 +214,33 @@
                 // Add to breakdown table if any kWh were in this tier
                 if (kwhInTier > 0) {
                      const row = breakdownBody.insertRow();
-                     row.classList.add('border-b', 'border-gray-300'); // Add border to row
 
                      const tierCell = row.insertCell(0);
                      tierCell.textContent = tierLabel;
-                     tierCell.classList.add('border', 'border-gray-300'); // Add border to cell
 
                      const kwhCell = row.insertCell(1);
-                     // Remove toFixed(2) to remove decimals from kWh
-                     kwhCell.textContent = Math.floor(kwhInTier).toLocaleString(); // Use Math.floor to remove decimals and toLocaleString for commas
-                     kwhCell.classList.add('border', 'border-gray-300'); // Add border to cell
-
+                     kwhCell.textContent = Math.floor(kwhInTier).toLocaleString(); // Remove decimals, add commas
 
                      const priceCell = row.insertCell(2);
-                     // Use toLocaleString for commas on price
-                     priceCell.textContent = `${tierPrice.toLocaleString()}`; // Removed "Dinars/kWh" here to make it shorter
-                     priceCell.classList.add('border', 'border-gray-300'); // Add border to cell
-
+                     priceCell.textContent = `${tierPrice.toLocaleString()}`; // Remove decimals, add commas
 
                      const costCell = row.insertCell(3);
-                     // Remove toFixed(2) and use toLocaleString for commas on cost
-                     costCell.textContent = `${Math.floor(costInTier).toLocaleString()} Dinars`; // Use Math.floor to remove decimals and toLocaleString for commas
-                     costCell.classList.add('border', 'border-gray-300', 'font-medium', 'text-gray-900'); // Add border to cell
+                     costCell.textContent = `${Math.floor(costInTier).toLocaleString()} IQD`; // Remove decimals, add commas, changed Dinars to IQD
+                     costCell.classList.add('font-medium', 'text-gray-900');
 
+                     // Borders are handled by CSS now
+                     // [tierCell, kwhCell, priceCell, costCell].forEach(cell => {
+                     //     cell.classList.add('border', 'border-gray-300');
+                     // });
                 }
 
 
-                // Update remaining kWh
-                remainingKwh -= kwhInTier;
-
-                // Update previous limit for the next iteration
-                previousLimit = tierLimit;
+                // Update remaining kWh and previous limit for the next iteration
+                 remainingKwh -= kwhInTier;
+                 previousLimit = (tier.limit === Infinity) ? previousLimit + kwhInTier : tier.limit;
             }
 
-            // Remove toFixed(2) and use toLocaleString for commas on total cost
-            totalCostDiv.textContent = `Estimated Total Cost: ${Math.floor(totalCost).toLocaleString()} Iraqi Dinars`; // Use Math.floor to remove decimals and toLocaleString for commas
+            totalCostDiv.textContent = `Estimated Total Cost: ${Math.floor(totalCost).toLocaleString()} Iraqi IQD`; // Remove decimals, add commas, changed Iraqi Dinars to Iraqi IQD
             totalCostDiv.classList.add('text-green-600');
         });
     </script>
