@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Electricity Cost Comparison: Kurdistan vs Dubai vs Germany</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: "Inter", sans-serif; /* Using Inter as a clean sans-serif font */
+            background: linear-gradient(to bottom right, #eef2f3, #e0e7ff); /* Very subtle gradient */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 1.5rem;
+        }
+
+        /* Container for the calculators - uses flexbox */
+        .comparison-container {
+            display: flex;
+            flex-wrap: wrap; /* Allow items to wrap on smaller screens */
+            gap: 2rem; /* Space between calculators */
+            width: 100%;
+            max-width: 1400px; /* Increased max width for three cards */
+            justify-content: center;
+        }
+
+        /* Styled container for each individual calculator */
+        .calculator-card {
+            background-color: #ffffff;
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            width: 100%; /* Full width on small screens */
+             /* Adjusted max-width and flex basis for three columns */
+            max-width: 400px;
+            flex: 1 1 30%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Custom table styling */
+         .breakdown-table {
+             border-collapse: collapse;
+             width: 100%;
+             margin-top: 1.5rem;
+             font-size: 0.9rem; /* Slightly smaller text in tables */
+         }
+         .breakdown-table th, .breakdown-table td {
+             padding: 0.75rem 1rem;
+             text-align: left;
+             border-bottom: 1px solid #e2e8f0;
+             color: #4a5568;
+         }
+         .breakdown-table th {
+             background-color: #f8fafc;
+             font-weight: 600;
+             color: #2d3748;
+             text-transform: uppercase;
+             font-size: 0.8rem;
+         }
+          .breakdown-table tbody tr:last-child td {
+              border-bottom: none;
+          }
+
+         /* Adjust padding and font size for smaller screens */
+         @media (max-width: 1024px) { /* Adjust breakpoint for stacking to two columns */
+             .comparison-container {
+                 gap: 1.5rem;
+             }
+              .calculator-card {
+                 max-width: 500px; /* Allow wider cards in two columns */
+                 flex: 1 1 45%;
+             }
+         }
+
+          @media (max-width: 768px) { /* Stack vertically on medium/small screens */
+             .comparison-container {
+                 flex-direction: column;
+                 gap: 1.5rem;
+             }
+             .calculator-card {
+                 max-width: 100%; /* Take full width when stacked */
+             }
+         }
+
+
+         /* Style for flag icons */
+         .flag-icon {
+             display: inline-block;
+             width: 32px;
+             height: 20px;
+             margin-right: 12px;
+             vertical-align: middle;
+         }
+         .flag-icon svg {
+             display: block;
+         }
+
+         /* Input field style */
+         .text-input {
+             border: 1px solid #cbd5e1;
+             border-radius: 0.375rem;
+             padding: 0.75rem 1rem;
+             width: 100%;
+             font-size: 1rem;
+             color: #4a5568;
+             transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+         }
+         .text-input:focus {
+             outline: none;
+             border-color: #4299e1;
+             box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.5);
+         }
+
+         /* Button style */
+         .primary-button {
+             background-color: #4299e1;
+             color: #ffffff;
+             font-weight: 700;
+             padding: 0.8rem 1.5rem;
+             border-radius: 0.375rem;
+             width: 100%;
+             text-align: center;
+             transition: background-color 0.2s ease-in-out, opacity 0.2s ease-in-out;
+         }
+         .primary-button:hover {
+             background-color: #3182ce;
+         }
+         .primary-button:focus {
+             outline: none;
+             box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.5);
+         }
+
+         /* Result text styling */
+         .total-cost {
+             font-size: 1.1rem; /* Slightly smaller font for total cost in comparison */
+             font-weight: 700;
+             color: #2d3748;
+             margin-top: 1.5rem;
+             text-align: center;
+         }
+          .total-cost span {
+              display: block; /* Display each currency on a new line */
+              font-size: 1rem;
+              font-weight: normal;
+              color: #4a5568;
+              margin-top: 0.25rem;
+          }
+          .total-cost span.main-currency {
+              font-size: 1.25rem;
+              font-weight: 700;
+              color: #2d3748;
+          }
+
+
+         .error-text {
+             color: #e53e3e; /* Red for errors */
+             font-weight: 600;
+         }
+    </style>
+</head>
+<body>
+
+    <div class="comparison-container">
+
+        <div class="calculator-card">
+            <div class="flex items-center justify-center mb-6">
+                 <svg class="flag-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400">
+                    <rect width="600" height="400" fill="#10b981"/>
+                    <rect width="600" height="266.67" fill="#ffffff"/>
+                    <rect width="600" height="133.33" fill="#ef4444"/>
+                    <circle cx="300" cy="200" r="70" fill="#facc15"/>
+                    <path d="M300 130l19.098 58.779-62.349-45.306 77.019 0L280.902 188.779z" fill="#ef4444"/>
+                </svg>
+                <h2 class="text-xl font-bold text-gray-800">Kurdistan Tariff</h2>
+            </div>
+
+            <div class="mb-4">
+                <label for="kwh-kurdistan" class="block text-gray-700 text-sm font-semibold mb-2">
+                    Consumption (kWh):
+                </label>
+                <input type="number" id="kwh-kurdistan" class="text-input kwh-input" placeholder="e.g., 500" min="0">
+            </div>
+
+            <button id="calculateBtn-kurdistan" class="primary-button">
+                Calculate Cost
+            </button>
+
+            <div id="result-kurdistan" class="mt-6">
+                <div id="totalCost-kurdistan" class="total-cost"></div>
+                <div id="breakdown-kurdistan" class="bg-gray-50 p-4 rounded-md mt-4">
+                     <h3 class="font-semibold text-gray-700 mb-3">Cost Breakdown:</h3>
+                     <div class="overflow-x-auto">
+                         <table class="breakdown-table">
+                             <thead>
+                                 <tr>
+                                     <th>Tier</th>
+                                     <th>kWh</th>
+                                     <th>Price (IQD/kWh)</th>
+                                     <th>Cost (IQD)</th>
+                                 </tr>
+                             </thead>
+                             <tbody id="breakdown-body-kurdistan">
+                             </tbody>
+                         </table>
+                     </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="calculator-card">
+            <div class="flex items-center justify-center mb-6">
+                 <svg class="flag-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 300">
+                    <rect width="600" height="300" fill="#00732f"/>
+                    <rect width="600" height="200" fill="#ffffff"/>
+                    <rect width="600" height="100" fill="#000000"/>
+                    <rect width="150" height="300" fill="#ff0000"/>
+                </svg>
+                <h2 class="text-xl font-bold text-gray-800">Dubai Tariff (DEWA)</h2>
+            </div>
+
+            <div class="mb-4">
+                <label for="kwh-dubai" class="block text-gray-700 text-sm font-semibold mb-2">
+                    Consumption (kWh):
+                </label>
+                <input type="number" id="kwh-dubai" class="text-input kwh-input" placeholder="e.g., 500" min="0">
+            </div>
+
+            <button id="calculateBtn-dubai" class="primary-button">
+                Calculate Cost
+            </button>
+
+            <div id="result-dubai" class="mt-6">
+                <div id="totalCost-dubai" class="total-cost"></div>
+                 <div id="breakdown-dubai" class="bg-gray-50 p-4 rounded-md mt-4">
+                     <h3 class="font-semibold text-gray-700 mb-3">Cost Breakdown:</h3>
+                      <div class="overflow-x-auto">
+                         <table class="breakdown-table">
+                             <thead>
+                                 <tr>
+                                     <th>Tier</th>
+                                     <th>kWh</th>
+                                     <th>Price (AED/kWh)</th>
+                                     <th>Cost (AED)</th>
+                                 </tr>
+                             </thead>
+                             <tbody id="breakdown-body-dubai">
+                             </tbody>
+                         </table>
+                     </div>
+                     <div class="text-sm text-gray-600 mt-4">
+                         <p>+ Fuel Surcharge (0.060 AED/kWh)</p>
+                         <p>+ 5% VAT applicable</p>
+                     </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="calculator-card">
+            <div class="flex items-center justify-center mb-6">
+                 <svg class="flag-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 360">
+                    <rect width="600" height="120" fill="#000000"/>
+                    <rect width="600" height="120" y="120" fill="#dd0000"/>
+                    <rect width="600" height="120" y="240" fill="#ffce00"/>
+                </svg>
+                <h2 class="text-xl font-bold text-gray-800">Germany Tariff</h2>
+            </div>
+
+            <div class="mb-4">
+                <label for="kwh-germany" class="block text-gray-700 text-sm font-semibold mb-2">
+                    Consumption (kWh):
+                </label>
+                <input type="number" id="kwh-germany" class="text-input kwh-input" placeholder="e.g., 500" min="0">
+            </div>
+
+            <button id="calculateBtn-germany" class="primary-button">
+                Calculate Cost
+            </button>
+
+            <div id="result-germany" class="mt-6">
+                <div id="totalCost-germany" class="total-cost"></div>
+                 <div id="breakdown-germany" class="bg-gray-50 p-4 rounded-md mt-4">
+                     <h3 class="font-semibold text-gray-700 mb-3">Cost Breakdown:</h3>
+                      <div class="overflow-x-auto">
+                         <table class="breakdown-table">
+                             <thead>
+                                 <tr>
+                                     <th>Tier</th>
+                                     <th>kWh</th>
+                                     <th>Price (€/kWh)</th>
+                                     <th>Cost (€)</th>
+                                 </tr>
+                             </thead>
+                             <tbody id="breakdown-body-germany">
+                             </tbody>
+                         </table>
+                     </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Exchange rates
+        const aedToIqdRate = 395;
+        const eurToIqdRate = 1611;
+        const eurToAedRate = aedToIqdRate / eurToIqdRate; // Calculate EUR to AED rate
+
+        // Function to update consumption in all inputs
+        function updateConsumption(kwh) {
+            document.querySelectorAll('.kwh-input').forEach(input => {
+                input.value = kwh;
+            });
+        }
+
+        // Function to trigger calculation for all calculators
+        function calculateAll() {
+            document.getElementById('calculateBtn-kurdistan').click();
+            document.getElementById('calculateBtn-dubai').click();
+            document.getElementById('calculateBtn-germany').click();
+        }
+
+        // Add event listeners to consumption inputs for synchronization
+        document.querySelectorAll('.kwh-input').forEach(input => {
+            input.addEventListener('input', function() {
+                const kwh = parseFloat(this.value);
+                if (!isNaN(kwh) && kwh >= 0) {
+                    updateConsumption(kwh);
+                    calculateAll();
+                } else if (this.value === '') { // Handle empty input
+                     updateConsumption('');
+                     calculateAll(); // Clear results when input is empty
+                }
+            });
+        });
+
+
+        // Kurdistan Calculator Logic
+        document.getElementById('calculateBtn-kurdistan').addEventListener('click', function() {
+            const kwhInput = document.getElementById('kwh-kurdistan');
+            const kwh = parseFloat(kwhInput.value);
+            const totalCostDiv = document.getElementById('totalCost-kurdistan');
+            const breakdownBody = document.getElementById('breakdown-body-kurdistan');
+
+            totalCostDiv.innerHTML = ''; // Use innerHTML to clear previous content including spans
+            breakdownBody.innerHTML = '';
+            totalCostDiv.classList.remove('text-green-600', 'text-red-600', 'error-text');
+            kwhInput.classList.remove('border-red-500');
+
+            if (isNaN(kwh) || kwh < 0) {
+                totalCostDiv.textContent = 'Please enter a valid positive number for kWh.';
+                totalCostDiv.classList.add('error-text');
+                kwhInput.classList.add('border-red-500');
+                return;
+            }
+
+            let totalCost = 0;
+            let remainingKwh = kwh;
+
+            const tiers = [
+                { limit: 400, price: 72, label: '0 - 400 kWh' },
+                { limit: 800, price: 108, label: '401 - 800 kWh' },
+                { limit: 1200, price: 175, label: '801 - 1200 kWh' },
+                { limit: 1600, price: 265, label: '1201 - 1600 kWh' },
+                { limit: Infinity, price: 350, label: '1600+ kWh' }
+            ];
+
+            let previousLimit = 0;
+
+            for (const tier of tiers) {
+                if (remainingKwh <= 0) {
+                    break;
+                }
+
+                const tierLimit = tier.limit;
+                const tierPrice = tier.price;
+                const tierLabel = tier.label;
+
+                const kwhInTier = Math.min(remainingKwh, tierLimit - previousLimit);
+                const costInTier = kwhInTier * tierPrice;
+                totalCost += costInTier;
+
+                if (kwhInTier > 0) {
+                     const row = breakdownBody.insertRow();
+                     const tierCell = row.insertCell(0);
+                     tierCell.textContent = tierLabel;
+                     const kwhCell = row.insertCell(1);
+                     kwhCell.textContent = Math.floor(kwhInTier).toLocaleString();
+                     const priceCell = row.insertCell(2);
+                     priceCell.textContent = `${tierPrice.toLocaleString()}`;
+                     const costCell = row.insertCell(3);
+                     costCell.textContent = `${Math.floor(costInTier).toLocaleString()} IQD`;
+                     costCell.classList.add('font-medium', 'text-gray-900');
+                }
+
+                 remainingKwh -= kwhInTier;
+                 previousLimit = (tier.limit === Infinity) ? previousLimit + kwhInTier : tier.limit;
+            }
+
+            totalCostDiv.innerHTML = `Estimated Total Cost: <span class="main-currency">${Math.floor(totalCost).toLocaleString()} Iraqi IQD</span>`; // Display total cost in IQD
+            totalCostDiv.classList.add('text-green-600');
+        });
+
+        // Dubai Calculator Logic
+        document.getElementById('calculateBtn-dubai').addEventListener('click', function() {
+            const kwhInput = document.getElementById('kwh-dubai');
+            const kwh = parseFloat(kwhInput.value);
+            const totalCostDiv = document.getElementById('totalCost-dubai');
+            const breakdownBody = document.getElementById('breakdown-body-dubai');
+
+            totalCostDiv.innerHTML = ''; // Use innerHTML to clear previous content including spans
+            breakdownBody.innerHTML = '';
+            totalCostDiv.classList.remove('text-green-600', 'text-red-600', 'error-text');
+             kwhInput.classList.remove('border-red-500');
+
+
+            if (isNaN(kwh) || kwh < 0) {
+                totalCostDiv.textContent = 'Please enter a valid positive number for kWh.';
+                 totalCostDiv.classList.add('error-text');
+                 kwhInput.classList.add('border-red-500');
+                return;
+            }
+
+            let totalCostBeforeSurchargeAndVAT = 0;
+            let remainingKwh = kwh;
+
+            // DEWA Residential Tariffs (AED/kWh)
+            const tiers = [
+                { limit: 2000, price: 0.230, label: '0 - 2000 kWh' },
+                { limit: 4000, price: 0.280, label: '2001 - 4000 kWh' },
+                { limit: 6000, price: 0.320, label: '4001 - 6000 kWh' },
+                { limit: Infinity, price: 0.380, label: 'Above 6000 kWh' }
+            ];
+
+            let previousLimit = 0;
+
+            for (const tier of tiers) {
+                if (remainingKwh <= 0) {
+                    break;
+                }
+
+                const tierLimit = tier.limit;
+                const tierPrice = tier.price;
+                const tierLabel = tier.label;
+
+                const kwhInTier = Math.min(remainingKwh, tierLimit - previousLimit);
+                const costInTier = kwhInTier * tierPrice;
+                totalCostBeforeSurchargeAndVAT += costInTier;
+
+                 if (kwhInTier > 0) {
+                     const row = breakdownBody.insertRow();
+                     const tierCell = row.insertCell(0);
+                     tierCell.textContent = tierLabel;
+                     const kwhCell = row.insertCell(1);
+                     kwhCell.textContent = Math.floor(kwhInTier).toLocaleString();
+                     const priceCell = row.insertCell(2);
+                     priceCell.textContent = `${tierPrice.toFixed(3)}`;
+                     const costCell = row.insertCell(3);
+                     costCell.textContent = `${costInTier.toFixed(2).toLocaleString()} AED`;
+                     costCell.classList.add('font-medium', 'text-gray-900');
+                }
+
+
+                remainingKwh -= kwhInTier;
+                previousLimit = (tier.limit === Infinity) ? previousLimit + kwhInTier : tier.limit;
+            }
+
+            // Calculate Fuel Surcharge and VAT
+            const fuelSurchargeRate = 0.060; // AED/kWh
+            const fuelSurcharge = kwh * fuelSurchargeRate;
+            const subtotal = totalCostBeforeSurchargeAndVAT + fuelSurcharge;
+            const vatRate = 0.05; // 5%
+            const vat = subtotal * vatRate;
+            const totalCostAED = subtotal + vat; // Total cost in AED
+
+            // Convert total cost to IQD
+            const totalCostIQD = totalCostAED * aedToIqdRate;
+
+
+            // Add Fuel Surcharge and VAT to breakdown (optional, but good for clarity)
+             if (kwh > 0) {
+                 let row = breakdownBody.insertRow();
+                 let cell = row.insertCell(0);
+                 cell.colSpan = 3;
+                 cell.textContent = 'Fuel Surcharge';
+                 cell.classList.add('text-right', 'font-semibold');
+                 cell = row.insertCell(1);
+                 cell.textContent = `${fuelSurcharge.toFixed(2).toLocaleString()} AED`;
+                 cell.classList.add('font-medium', 'text-gray-900');
+
+                 row = breakdownBody.insertRow();
+                 cell = row.insertCell(0);
+                 cell.colSpan = 3;
+                 cell.textContent = 'VAT (5%)';
+                 cell.classList.add('text-right', 'font-semibold');
+                 cell = row.insertCell(1);
+                 cell.textContent = `${vat.toFixed(2).toLocaleString()} AED`;
+                 cell.classList.add('font-medium', 'text-gray-900');
+             }
+
+
+            // Display total cost in both AED and IQD
+            totalCostDiv.innerHTML = `Estimated Total Cost: <span class="main-currency">${totalCostAED.toFixed(2).toLocaleString()} AED</span> <span>(${Math.floor(totalCostIQD).toLocaleString()} Iraqi IQD)</span>`; // Display both currencies
+            totalCostDiv.classList.add('text-green-600');
+        });
+
+         // Germany Calculator Logic
+        document.getElementById('calculateBtn-germany').addEventListener('click', function() {
+            const kwhInput = document.getElementById('kwh-germany');
+            const kwh = parseFloat(kwhInput.value);
+            const totalCostDiv = document.getElementById('totalCost-germany');
+            const breakdownBody = document.getElementById('breakdown-body-germany');
+
+            totalCostDiv.innerHTML = ''; // Use innerHTML to clear previous content including spans
+            breakdownBody.innerHTML = '';
+            totalCostDiv.classList.remove('text-green-600', 'text-red-600', 'error-text');
+             kwhInput.classList.remove('border-red-500');
+
+
+            if (isNaN(kwh) || kwh < 0) {
+                totalCostDiv.textContent = 'Please enter a valid positive number for kWh.';
+                 totalCostDiv.classList.add('error-text');
+                 kwhInput.classList.add('border-red-500');
+                return;
+            }
+
+            const pricePerKwhEUR = 0.398; // Flat rate in EUR/kWh
+            const totalCostEUR = kwh * pricePerKwhEUR; // Total cost in EUR
+
+            // Convert total cost to IQD
+            const totalCostIQD = totalCostEUR * eurToIqdRate;
+
+
+            // Add breakdown row for the flat rate
+            if (kwh > 0) {
+                const row = breakdownBody.insertRow();
+                const tierCell = row.insertCell(0);
+                tierCell.textContent = 'Flat Rate';
+                const kwhCell = row.insertCell(1);
+                kwhCell.textContent = Math.floor(kwh).toLocaleString();
+                const priceCell = row.insertCell(2);
+                 // Display price with decimals for EUR
+                priceCell.textContent = `${pricePerKwhEUR.toFixed(3)}`;
+                const costCell = row.insertCell(3);
+                 // Display cost with decimals for EUR
+                costCell.textContent = `${totalCostEUR.toFixed(2).toLocaleString()} €`;
+                costCell.classList.add('font-medium', 'text-gray-900');
+            }
+
+
+            // Display total cost in EUR and IQD
+            totalCostDiv.innerHTML = `Estimated Total Cost: <span class="main-currency">${totalCostEUR.toFixed(2).toLocaleString()} €</span> <span>(${Math.floor(totalCostIQD).toLocaleString()} Iraqi IQD)</span>`; // Display EUR and IQD
+            totalCostDiv.classList.add('text-green-600');
+        });
+
+         // Initial calculation on page load (optional)
+         window.onload = function() {
+             // You can set a default kWh value here if you want
+             // document.getElementById('kwh-kurdistan').value = 500;
+             // calculateAll();
+         };
+
+
+    </script>
+</body>
+</html>
