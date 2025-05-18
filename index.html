@@ -567,7 +567,7 @@
 
 
             // Display total cost in AED, IQD, and TRY
-            totalCostDiv.innerHTML = `Estimated Total Cost: <span class="main-currency">${totalCostAED.toFixed(2).toLocaleString()} AED</span> <span>(${Math.floor(totalCostIQD).toLocaleString()} Iraqi IQD)</span> <span>(${totalCostTRY.toFixed(2).toLocaleString()} TRY)</span>`; // Display all currencies
+            totalCostDiv.innerHTML = `Estimated Total Cost: <span class="main-currency">${totalCostAED.toFixed(2).toLocaleString()} AED</span> <span>(${Math.floor(totalCostIQD).toLocaleString()} Iraqi IQD)</span>`; // Display AED and IQD
             totalCostDiv.classList.add('text-green-600');
         });
 
@@ -620,7 +620,7 @@
 
 
             // Display total cost in EUR, IQD, and TRY
-            totalCostDiv.innerHTML = `Estimated Total Cost: <span class="main-currency">${totalCostEUR.toFixed(2).toLocaleString()} €</span> <span>(${Math.floor(totalCostIQD).toLocaleString()} Iraqi IQD)</span> <span>(${totalCostTRY.toFixed(2).toLocaleString()} TRY)</span>`; // Display EUR, IQD, and TRY
+            totalCostDiv.innerHTML = `Estimated Total Cost: <span class="main-currency">${totalCostEUR.toFixed(2).toLocaleString()} €</span> <span>(${Math.floor(totalCostIQD).toLocaleString()} Iraqi IQD)</span>`; // Display EUR and IQD
             totalCostDiv.classList.add('text-green-600');
         });
 
