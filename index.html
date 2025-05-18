@@ -341,10 +341,10 @@
                          <table class="breakdown-table">
                              <thead>
                                  <tr>
-                                     <th>Tier</th>
+                                     <th>Type</th>
                                      <th>kWh</th>
-                                     <th>Price (TRY/kWh)</th>
-                                     <th>Cost (TRY)</th>
+                                     <th>Price ($/kWh)</th>
+                                     <th>Cost ($)</th>
                                  </tr>
                              </thead>
                              <tbody id="breakdown-body-turkey">
@@ -644,58 +644,30 @@
                 return;
             }
 
-            let totalCostTRY = 0;
-            let remainingKwh = kwh;
-
-            // Turkey Residential Tariffs (TRY/kWh) - Based on research (Note: Prices might have changed since the source date)
-            const tiers = [
-                { limit: 240, price: 1.4744, label: '0 - 240 kWh' },
-                { limit: Infinity, price: 2.2116, label: 'Above 240 kWh' }
-            ];
-
-            let previousLimit = 0;
-
-            for (const tier of tiers) {
-                if (remainingKwh <= 0) {
-                    break;
-                }
-
-                const tierLimit = tier.limit;
-                const tierPrice = tier.price;
-                const tierLabel = tier.label;
-
-                const kwhInTier = Math.min(remainingKwh, tierLimit - previousLimit);
-                const costInTier = kwhInTier * tierPrice;
-                totalCostTRY += costInTier;
-
-                 if (kwhInTier > 0) {
-                     const row = breakdownBody.insertRow();
-                     const tierCell = row.insertCell(0);
-                     tierCell.textContent = tierLabel;
-                     const kwhCell = row.insertCell(1);
-                     kwhCell.textContent = Math.floor(kwhInTier).toLocaleString();
-                     const priceCell = row.insertCell(2);
-                     // Display price with decimals for TRY
-                     priceCell.textContent = `${tierPrice.toFixed(4)}`;
-                     const costCell = row.insertCell(3);
-                     // Display cost with decimals for TRY
-                     costCell.textContent = `${costInTier.toFixed(2).toLocaleString()} TRY`;
-                     costCell.classList.add('font-medium', 'text-gray-900');
-                }
-
-
-                remainingKwh -= kwhInTier;
-                previousLimit = (tier.limit === Infinity) ? previousLimit + kwhInTier : tier.limit;
-            }
+            // Flat rate in USD per kWh
+            const pricePerKwhUSD = 0.0667;
+            const totalCostUSD = kwh * pricePerKwhUSD;
 
             // Convert total cost to IQD
-            const totalCostIQD = totalCostTRY * tryToIqdRate;
-             // Convert total cost to AED
-            const totalCostAED = totalCostTRY * tryToAedRate;
+            const usdToIqdRate = 1450;
+            const totalCostIQD = totalCostUSD * usdToIqdRate;
 
+            // Add breakdown row for the flat rate
+            if (kwh > 0) {
+                const row = breakdownBody.insertRow();
+                const typeCell = row.insertCell(0);
+                typeCell.textContent = 'Flat Rate';
+                const kwhCell = row.insertCell(1);
+                kwhCell.textContent = Math.floor(kwh).toLocaleString();
+                const priceCell = row.insertCell(2);
+                priceCell.textContent = `${pricePerKwhUSD.toFixed(4)}`;
+                const costCell = row.insertCell(3);
+                costCell.textContent = `${totalCostUSD.toFixed(2).toLocaleString()} $`;
+                costCell.classList.add('font-medium', 'text-gray-900');
+            }
 
-            // Display total cost in TRY, IQD, and AED
-            totalCostDiv.innerHTML = `Estimated Total Cost: <span class="main-currency">${totalCostTRY.toFixed(2).toLocaleString()} TRY</span> <span>(${Math.floor(totalCostIQD).toLocaleString()} Iraqi IQD)</span> <span>(${totalCostAED.toFixed(2).toLocaleString()} AED)</span>`; // Display TRY, IQD, and AED
+            // Display total cost in USD and IQD
+            totalCostDiv.innerHTML = `Estimated Total Cost: <span class="main-currency">${totalCostUSD.toFixed(2).toLocaleString()} $</span> <span>(${Math.floor(totalCostIQD).toLocaleString()} Iraqi IQD)</span>`;
             totalCostDiv.classList.add('text-green-600');
         });
 
