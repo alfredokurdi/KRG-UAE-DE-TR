@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Electricity Cost Comparison: Kurdistan vs Dubai vs Germany</title>
+    <title>Electricity Cost Comparison: Kurdistan vs Dubai vs Germany vs Turkey</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body {
@@ -22,7 +22,7 @@
             flex-wrap: wrap; /* Allow items to wrap on smaller screens */
             gap: 2rem; /* Space between calculators */
             width: 100%;
-            max-width: 1400px; /* Increased max width for three cards */
+            max-width: 1600px; /* Increased max width for four cards */
             justify-content: center;
         }
 
@@ -33,9 +33,9 @@
             border-radius: 1rem;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
             width: 100%; /* Full width on small screens */
-             /* Adjusted max-width and flex basis for three columns */
-            max-width: 400px;
-            flex: 1 1 30%;
+             /* Adjusted max-width and flex basis for four columns */
+            max-width: 350px;
+            flex: 1 1 23%;
             display: flex;
             flex-direction: column;
         }
@@ -65,6 +65,16 @@
           }
 
          /* Adjust padding and font size for smaller screens */
+         @media (max-width: 1280px) { /* Adjust breakpoint for stacking to three columns */
+             .comparison-container {
+                 gap: 1.5rem;
+             }
+              .calculator-card {
+                 max-width: 400px; /* Allow wider cards in three columns */
+                 flex: 1 1 30%;
+             }
+         }
+
          @media (max-width: 1024px) { /* Adjust breakpoint for stacking to two columns */
              .comparison-container {
                  gap: 1.5rem;
@@ -301,13 +311,64 @@
             </div>
         </div>
 
+         <div class="calculator-card">
+            <div class="flex items-center justify-center mb-6">
+                 <svg class="flag-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 533.3">
+                    <rect width="800" height="533.3" fill="#e30a17"/>
+                    <circle cx="400" cy="266.65" r="160" fill="#ffffff"/>
+                    <circle cx="440" cy="266.65" r="130" fill="#e30a17"/>
+                    <path d="M520 266.65l-3.246 10.543 10.082-6.523-12.445 3.246 1.854-12.687-9.121 7.843 11.287-5.61-11.287-5.61 9.121 7.843-1.854-12.687 12.445 3.246-10.082-6.523z" fill="#ffffff"/>
+                </svg>
+                <h2 class="text-xl font-bold text-gray-800">Turkey Tariff</h2>
+            </div>
+
+            <div class="mb-4">
+                <label for="kwh-turkey" class="block text-gray-700 text-sm font-semibold mb-2">
+                    Consumption (kWh):
+                </label>
+                <input type="number" id="kwh-turkey" class="text-input kwh-input" placeholder="e.g., 500" min="0">
+            </div>
+
+            <button id="calculateBtn-turkey" class="primary-button">
+                Calculate Cost
+            </button>
+
+            <div id="result-turkey" class="mt-6">
+                <div id="totalCost-turkey" class="total-cost"></div>
+                 <div id="breakdown-turkey" class="bg-gray-50 p-4 rounded-md mt-4">
+                     <h3 class="font-semibold text-gray-700 mb-3">Cost Breakdown:</h3>
+                      <div class="overflow-x-auto">
+                         <table class="breakdown-table">
+                             <thead>
+                                 <tr>
+                                     <th>Tier</th>
+                                     <th>kWh</th>
+                                     <th>Price (TRY/kWh)</th>
+                                     <th>Cost (TRY)</th>
+                                 </tr>
+                             </thead>
+                             <tbody id="breakdown-body-turkey">
+                             </tbody>
+                         </table>
+                     </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 
     <script>
         // Exchange rates
         const aedToIqdRate = 395;
         const eurToIqdRate = 1611;
-        const eurToAedRate = aedToIqdRate / eurToIqdRate; // Calculate EUR to AED rate
+        const tryToIqdRate = 33.81; // Based on research
+
+        // Calculate other exchange rates
+        const eurToAedRate = aedToIqdRate / eurToIqdRate;
+        const tryToAedRate = aedToIqdRate / tryToIqdRate; // Calculate TRY to AED
+        const eurToTryRate = tryToIqdRate / eurToIqdRate; // Calculate EUR to TRY
+        const aedToTryRate = tryToIqdRate / aedToIqdRate; // Calculate AED to TRY
+
 
         // Function to update consumption in all inputs
         function updateConsumption(kwh) {
@@ -321,6 +382,7 @@
             document.getElementById('calculateBtn-kurdistan').click();
             document.getElementById('calculateBtn-dubai').click();
             document.getElementById('calculateBtn-germany').click();
+            document.getElementById('calculateBtn-turkey').click(); // Include Turkey
         }
 
         // Add event listeners to consumption inputs for synchronization
@@ -478,6 +540,8 @@
 
             // Convert total cost to IQD
             const totalCostIQD = totalCostAED * aedToIqdRate;
+             // Convert total cost to TRY
+            const totalCostTRY = totalCostAED * aedToTryRate;
 
 
             // Add Fuel Surcharge and VAT to breakdown (optional, but good for clarity)
@@ -502,8 +566,8 @@
              }
 
 
-            // Display total cost in both AED and IQD
-            totalCostDiv.innerHTML = `Estimated Total Cost: <span class="main-currency">${totalCostAED.toFixed(2).toLocaleString()} AED</span> <span>(${Math.floor(totalCostIQD).toLocaleString()} Iraqi IQD)</span>`; // Display both currencies
+            // Display total cost in AED, IQD, and TRY
+            totalCostDiv.innerHTML = `Estimated Total Cost: <span class="main-currency">${totalCostAED.toFixed(2).toLocaleString()} AED</span> <span>(${Math.floor(totalCostIQD).toLocaleString()} Iraqi IQD)</span> <span>(${totalCostTRY.toFixed(2).toLocaleString()} TRY)</span>`; // Display all currencies
             totalCostDiv.classList.add('text-green-600');
         });
 
@@ -532,6 +596,10 @@
 
             // Convert total cost to IQD
             const totalCostIQD = totalCostEUR * eurToIqdRate;
+             // Convert total cost to AED
+            const totalCostAED = totalCostEUR * eurToAedRate;
+             // Convert total cost to TRY
+            const totalCostTRY = totalCostEUR * eurToTryRate;
 
 
             // Add breakdown row for the flat rate
@@ -551,10 +619,86 @@
             }
 
 
-            // Display total cost in EUR and IQD
-            totalCostDiv.innerHTML = `Estimated Total Cost: <span class="main-currency">${totalCostEUR.toFixed(2).toLocaleString()} €</span> <span>(${Math.floor(totalCostIQD).toLocaleString()} Iraqi IQD)</span>`; // Display EUR and IQD
+            // Display total cost in EUR, IQD, and TRY
+            totalCostDiv.innerHTML = `Estimated Total Cost: <span class="main-currency">${totalCostEUR.toFixed(2).toLocaleString()} €</span> <span>(${Math.floor(totalCostIQD).toLocaleString()} Iraqi IQD)</span> <span>(${totalCostTRY.toFixed(2).toLocaleString()} TRY)</span>`; // Display EUR, IQD, and TRY
             totalCostDiv.classList.add('text-green-600');
         });
+
+        // Turkey Calculator Logic
+        document.getElementById('calculateBtn-turkey').addEventListener('click', function() {
+            const kwhInput = document.getElementById('kwh-turkey');
+            const kwh = parseFloat(kwhInput.value);
+            const totalCostDiv = document.getElementById('totalCost-turkey');
+            const breakdownBody = document.getElementById('breakdown-body-turkey');
+
+            totalCostDiv.innerHTML = ''; // Use innerHTML to clear previous content including spans
+            breakdownBody.innerHTML = '';
+            totalCostDiv.classList.remove('text-green-600', 'text-red-600', 'error-text');
+             kwhInput.classList.remove('border-red-500');
+
+
+            if (isNaN(kwh) || kwh < 0) {
+                totalCostDiv.textContent = 'Please enter a valid positive number for kWh.';
+                 totalCostDiv.classList.add('error-text');
+                 kwhInput.classList.add('border-red-500');
+                return;
+            }
+
+            let totalCostTRY = 0;
+            let remainingKwh = kwh;
+
+            // Turkey Residential Tariffs (TRY/kWh) - Based on research (Note: Prices might have changed since the source date)
+            const tiers = [
+                { limit: 240, price: 1.4744, label: '0 - 240 kWh' },
+                { limit: Infinity, price: 2.2116, label: 'Above 240 kWh' }
+            ];
+
+            let previousLimit = 0;
+
+            for (const tier of tiers) {
+                if (remainingKwh <= 0) {
+                    break;
+                }
+
+                const tierLimit = tier.limit;
+                const tierPrice = tier.price;
+                const tierLabel = tier.label;
+
+                const kwhInTier = Math.min(remainingKwh, tierLimit - previousLimit);
+                const costInTier = kwhInTier * tierPrice;
+                totalCostTRY += costInTier;
+
+                 if (kwhInTier > 0) {
+                     const row = breakdownBody.insertRow();
+                     const tierCell = row.insertCell(0);
+                     tierCell.textContent = tierLabel;
+                     const kwhCell = row.insertCell(1);
+                     kwhCell.textContent = Math.floor(kwhInTier).toLocaleString();
+                     const priceCell = row.insertCell(2);
+                     // Display price with decimals for TRY
+                     priceCell.textContent = `${tierPrice.toFixed(4)}`;
+                     const costCell = row.insertCell(3);
+                     // Display cost with decimals for TRY
+                     costCell.textContent = `${costInTier.toFixed(2).toLocaleString()} TRY`;
+                     costCell.classList.add('font-medium', 'text-gray-900');
+                }
+
+
+                remainingKwh -= kwhInTier;
+                previousLimit = (tier.limit === Infinity) ? previousLimit + kwhInTier : tier.limit;
+            }
+
+            // Convert total cost to IQD
+            const totalCostIQD = totalCostTRY * tryToIqdRate;
+             // Convert total cost to AED
+            const totalCostAED = totalCostTRY * tryToAedRate;
+
+
+            // Display total cost in TRY, IQD, and AED
+            totalCostDiv.innerHTML = `Estimated Total Cost: <span class="main-currency">${totalCostTRY.toFixed(2).toLocaleString()} TRY</span> <span>(${Math.floor(totalCostIQD).toLocaleString()} Iraqi IQD)</span> <span>(${totalCostAED.toFixed(2).toLocaleString()} AED)</span>`; // Display TRY, IQD, and AED
+            totalCostDiv.classList.add('text-green-600');
+        });
+
 
          // Initial calculation on page load (optional)
          window.onload = function() {
